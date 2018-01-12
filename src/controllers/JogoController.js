@@ -3,10 +3,26 @@ class JogoController{
         this._app = app;
     }
 
-    jogo(req,res) {
-        res.render('jogo');
+    jogo(req,res){
+        if(req.session.autenticado){
+            res.render('jogo');
+        }else{
+            res.render('index', { erros : [ { msg : "Necessário fazer o login" } ] });
+        }
+    }
+
+    sair(req,res){
+        if(req.session.autenticado){
+            req.session.destroy((err) => {
+                if(err){
+                    console.error(err);
+                }
+            });
+        }
+
+        res.redirect('/');
     }
 }
-module.exports.jogo = (app) => {
+module.exports = (app) => {
     return new JogoController();
 }

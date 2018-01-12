@@ -6,6 +6,10 @@ class UsuariosRepository{
 	inserirUsuario (usuario){
 		this._connection.insert(usuario);
 	}
+
+	autenticar(usuario){
+		return this._connection.findOne(usuario, { fields : { _id : 0, senha : 0 }});
+	}
 }
 
 module.exports = function(){
