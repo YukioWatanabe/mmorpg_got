@@ -12,9 +12,10 @@ app.use(express.static('./src/public'));
 app.use(bodyParser.urlencoded( { extended : true }));
 app.use(validator());
 
-consign().include('./src/controllers')
-         .then('./src/routes')
-         .then('./src/models')
+consign().include('config/DbConnection.js')
+         .then('src/controllers')
+         .then('src/routes')
+         .then('src/models')
          .into(app);
 
 module.exports = app;
