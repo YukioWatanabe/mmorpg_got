@@ -22,19 +22,27 @@ class IndexController{
 
         const connection = this._app.config.DbConnection.getConnection();
         const usuariosRepository = new this._app.src.models.UsuariosRepository(connection);
+        const jogoRepository     = new this._app.src.models.JogoRepository(connection);
 
-        usuariosRepository.autenticar(dados).then((user) => {
-            const autenticado = !!user;
+        usuariosRepository.autenticar(dados).then((jogador) => {
+            const autenticado = !!jogador;
 
             if(autenticado){
                 req.session.autenticado = autenticado;
-                req.session.user = user;
-                res.redirect("/jogo");
+                req.session.jogador = jogador;
+                return jogoRepository.getParametrosUsuario( jogador.usuario );
             }else{
-                res.render("index", { erros : [ { msg : "Usuário ou senha inválidos" } ]});
+                return Promise.reject({ page : "index", msg : "Usuário ou senha inválidos" });
             }
+        }).then((parametros) => {
+            req.session.jogo = { parametros };
+            res.redirect("/jogo");
         }).catch((error) => {
-            console.log(error);
+            if(error.page){
+                res.render(error.page, { erros : [ { msg : error.msg } ]});
+            }else{
+                console.log(error);
+            }
         });
     }
 }

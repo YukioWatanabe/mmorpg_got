@@ -8,26 +8,38 @@ class CadastroController{
     }
 
     cadastrar(req,res) {
+        const connection = this._app.config.DbConnection.getConnection();
+        const usuariosRepository = new this._app.src.models.UsuariosRepository(connection);
+        const jogoRepository = new this._app.src.models.JogoRepository(connection);
+
         const dados = req.body;
     
         req.assert('nome', 'Nome não pode ser vazio').notEmpty();
         req.assert('usuario', 'Usuário não pode ser vazio').notEmpty();
-        req.assert('senha', 'Senha não pode ser vazio').notEmpty();
-        req.assert('casa', 'Casa não pode ser vazio').notEmpty();
+        req.assert('senha', 'Senha não pode ser vazia').notEmpty();
+        req.assert('casa', 'Uma casa deve ser selecionada').notEmpty();
     
-        const erros = req.validationErrors();
-    
-        if(erros){
-            res.render('cadastro', { erros, dados });
-            return;
-        }
-    
-        const connection = this._app.config.DbConnection.getConnection();
-        const usuariosRepository = new this._app.src.models.UsuariosRepository(connection);
-    
-        usuariosRepository.inserirUsuario(dados);
-    
-        res.redirect('/');
+        let erros = req.validationErrors() || [];
+
+        usuariosRepository.existeUsuario(dados.usuario).then((usuario) => {
+            if(usuario){
+                erros.push({ msg : "Usuário já existe" });
+            }
+
+            const hasErrors = erros.length != 0;
+
+            if(hasErrors){
+                res.render('cadastro', { erros, dados });
+                return;
+            }
+        
+            usuariosRepository.inserirUsuario(dados);
+            jogoRepository.gerarParametrosUsuario(dados.usuario);
+        
+            res.redirect('/');
+        }).catch((err) => {
+            console.log(err);
+        });
     }
 }
 

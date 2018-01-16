@@ -5,7 +5,7 @@ class JogoController{
 
     jogo(req,res){
         if(req.session.autenticado){
-            res.render('jogo');
+            res.render('jogo', { img_casa : req.session.jogador.casa, parametros : req.session.jogo.parametros });
         }else{
             res.render('index', { erros : [ { msg : "Necessário fazer o login" } ] });
         }
@@ -21,6 +21,14 @@ class JogoController{
         }
 
         res.redirect('/');
+    }
+
+    suditos(req,res){
+        res.render('aldeoes', { validacao : {} });
+    }
+
+    pergaminhos(req,res){
+        res.render('pergaminhos', { validacao : {} });
     }
 }
 module.exports = (app) => {
