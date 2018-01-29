@@ -5,6 +5,7 @@ class JogoRouter{
         this.sairJogo();
         this.suditos();
         this.pergaminhos();
+        this.ordenarSudito();
     }
 
     telaJogo(){
@@ -28,6 +29,12 @@ class JogoRouter{
     pergaminhos(){
         this._app.get('/pergaminhos', (req, res) => {
             this._app.src.controllers.JogoController.pergaminhos(req,res);
+        });
+    }
+
+    ordenarSudito(){
+        this._app.post('/ordenar_acao_sudito', (req, res) => {
+            this._app.src.controllers.JogoController.ordenarSudito(req,res);
         });
     }
 }

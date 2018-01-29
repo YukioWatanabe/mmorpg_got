@@ -1,6 +1,7 @@
 class IndexController{
     constructor(app){
         this._app = app;
+        this._crypto = require('crypto');
     }
 
     index(req,res) {
@@ -19,6 +20,9 @@ class IndexController{
             res.render('index', { erros });
             return;
         }
+
+        dados.senha = this._crypto.createHash('md5').update(dados.senha).digest("hex");
+        console.log(dados.senha);
 
         const connection = this._app.config.DbConnection.getConnection();
         const usuariosRepository = new this._app.src.models.UsuariosRepository(connection);

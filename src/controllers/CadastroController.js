@@ -1,6 +1,7 @@
 class CadastroController{
     constructor(app){
         this._app = app;
+        this._crypto = require('crypto');
     }
 
     cadastro(req,res) {
@@ -32,7 +33,8 @@ class CadastroController{
                 res.render('cadastro', { erros, dados });
                 return;
             }
-        
+            
+            dados.senha =  this._crypto.createHash('md5').update(dados.senha).digest("hex");
             usuariosRepository.inserirUsuario(dados);
             jogoRepository.gerarParametrosUsuario(dados.usuario);
         
